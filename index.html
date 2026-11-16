@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Explore and practise linked lists, stacks and binary search trees by keyboard, screen reader and sound." />
+    <meta name="color-scheme" content="light dark" />
+    <title>EchoStruct: data structures you can hear and navigate</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <a class="skip" href="#explorer">Skip to the explorer</a>
+
+    <header class="site">
+      <div class="wrap">
+        <p class="brand" aria-hidden="true">EchoStruct</p>
+        <h1><span class="visually-hidden">EchoStruct: </span>Data structures you can hear and navigate</h1>
+        <p class="lede">
+          Explore linked lists, stacks and binary search trees with the keyboard, your screen reader and sound, then
+          practise the operations that course exams ask about.
+        </p>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section aria-labelledby="why-h" class="card why">
+        <h2 id="why-h">Why this exists</h2>
+        <div class="before-after">
+          <figure class="before">
+            <img id="before-img" alt="graphic" width="240" height="150" />
+            <figcaption>
+              <strong>Before:</strong> a typical course diagram. Its alt text is just <q>graphic</q>, so that is all a
+              screen reader says. The structure, which is the point of the lesson, is missing.
+            </figcaption>
+          </figure>
+          <div class="after">
+            <p>
+              <strong>After:</strong> the same tree in EchoStruct. Move with the arrow keys and hear, for example,
+              <q>6. Right child of 3. Depth 2. Left child 4, right child 7.</q> A tone tells you how deep you are, and
+              ticks in your left and right ears tell you which children exist.
+            </p>
+            <button type="button" id="try-tree" class="primary">Explore this tree</button>
+          </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="explorer-h" class="card">
+        <h2 id="explorer-h">Explorer</h2>
+
+        <div class="controls">
+          <fieldset>
+            <legend>Structure</legend>
+            <label><input type="radio" name="kind" value="list" /> Linked list <kbd>1</kbd></label>
+            <label><input type="radio" name="kind" value="stack" /> Stack <kbd>2</kbd></label>
+            <label><input type="radio" name="kind" value="tree" checked /> Binary search tree <kbd>3</kbd></label>
+          </fieldset>
+          <fieldset>
+            <legend>Mode</legend>
+            <label><input type="radio" name="mode" value="explore" checked /> Explore</label>
+            <label><input type="radio" name="mode" value="practice" /> Practice</label>
+          </fieldset>
+        </div>
+
+        <p id="explorer-instructions" class="instructions"></p>
+
+        <div
+          id="explorer"
+          class="explorer"
+          tabindex="0"
+          role="application"
+          aria-roledescription="data structure explorer"
+          aria-label="Binary search tree explorer"
+          aria-describedby="explorer-instructions"
+        >
+          <svg id="diagram" aria-hidden="true" focusable="false"></svg>
+          <p class="focus-hint" aria-hidden="true">Click here or press Tab to start exploring</p>
+        </div>
+
+        <div id="move-buttons" class="row move-buttons" role="group" aria-label="Move buttons, for touch screens and switch access"></div>
+
+        <div class="status" aria-hidden="true">
+          <span class="status-label">Last announcement</span>
+          <p id="status-text">Not started yet.</p>
+        </div>
+
+        <section id="practice-panel" class="practice" aria-labelledby="practice-h" hidden>
+          <h3 id="practice-h">Practice</h3>
+          <p id="question" class="question"></p>
+          <p id="feedback" class="feedback"></p>
+          <div class="row">
+            <button type="button" id="hint-btn">Hint <kbd>H</kbd></button>
+            <button type="button" id="next-btn">Next question <kbd>N</kbd></button>
+            <p id="score" class="score"></p>
+          </div>
+        </section>
+
+        <div class="row keys-row">
+          <button type="button" id="help-btn">Keyboard and sound guide <kbd>?</kbd></button>
+          <button type="button" id="tour-btn">Listen to the shape <kbd>T</kbd></button>
+          <button type="button" id="overview-btn">Describe it all <kbd>O</kbd></button>
+        </div>
+      </section>
+
+      <div class="two-col">
+        <section aria-labelledby="lesson-h" class="card">
+          <h2 id="lesson-h">About this structure</h2>
+          <div id="lesson"></div>
+        </section>
+
+        <section aria-labelledby="outline-h" class="card">
+          <h2 id="outline-h">Text outline</h2>
+          <p class="small">The whole structure as a plain list, for browse mode or a braille display. It updates as you move.</p>
+          <div id="outline" class="outline"></div>
+        </section>
+      </div>
+
+      <div class="two-col">
+        <section aria-labelledby="edit-h" class="card">
+          <h2 id="edit-h">Change the structure</h2>
+          <form id="op-form" novalidate>
+            <label for="op-value">Value</label>
+            <div class="row">
+              <input id="op-value" inputmode="numeric" autocomplete="off" aria-describedby="op-error" />
+              <span id="op-buttons" class="row"></span>
+            </div>
+            <p id="op-error" class="error" role="alert"></p>
+          </form>
+
+          <form id="build-form" novalidate>
+            <h3>Build your own</h3>
+            <label for="build-values">Values, separated by commas or spaces</label>
+            <textarea id="build-values" rows="2" aria-describedby="build-help build-error"></textarea>
+            <p id="build-help" class="small">
+              For a tree, values are inserted in the order you type them. Try sorted values to hear what goes wrong.
+            </p>
+            <p id="build-error" class="error" role="alert"></p>
+            <div class="row">
+              <button type="submit" class="primary">Build</button>
+              <label for="preset" class="inline">Or load an example</label>
+              <select id="preset"></select>
+            </div>
+          </form>
+        </section>
+
+        <section aria-labelledby="settings-h" class="card">
+          <h2 id="settings-h">Settings</h2>
+          <form id="settings" class="settings">
+            <label><input type="checkbox" id="set-sound" checked /> Sound mapping</label>
+            <label for="set-volume">Volume</label>
+            <input type="range" id="set-volume" min="0" max="1" step="0.05" value="0.6" />
+            <label><input type="checkbox" id="set-brief" /> Brief announcements (for experienced users)</label>
+            <label>
+              <input type="checkbox" id="set-voice" aria-describedby="voice-help" /> Built-in voice
+            </label>
+            <p id="voice-help" class="small">
+              Turn this on only if you are <em>not</em> using a screen reader, otherwise you will hear everything twice.
+            </p>
+            <label for="set-rate">Built-in voice speed</label>
+            <input type="range" id="set-rate" min="0.6" max="2" step="0.1" value="1.1" />
+            <label for="set-text">Text size</label>
+            <select id="set-text">
+              <option value="1">Standard</option>
+              <option value="1.2">Large</option>
+              <option value="1.45">Extra large</option>
+            </select>
+            <label for="set-theme">Colours</label>
+            <select id="set-theme">
+              <option value="system">Match my device</option>
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+              <option value="contrast">High contrast</option>
+            </select>
+            <button type="button" id="sound-check">Play a sound check</button>
+          </form>
+        </section>
+      </div>
+    </main>
+
+    <footer class="wrap site-footer">
+      <p>EchoStruct works offline. Nothing you do is sent anywhere. Built for AccessED Hacks 2026. <a href="https://github.com/Blop77/echostruct">Source code</a></p>
+      <details>
+        <summary>Credits and limitations</summary>
+        <p>
+          Built with TypeScript and Vite. Sounds are generated live with the Web Audio API; there are no audio files.
+          No other libraries run in the page. The built-in voice uses your browser's speech synthesis. Example values are
+          made up. Development was assisted by Claude, an AI assistant.
+        </p>
+        <ul>
+          <li>Covers linked lists, stacks and binary search trees only. No graphs, heaps or tree deletion yet.</li>
+          <li>The keyboard model was tested with keyboard-only use and automated accessibility checks, not yet with blind students.</li>
+          <li>Sound needs headphones or stereo speakers to hear left and right.</li>
+          <li>Progress is not saved between visits. Settings are.</li>
+        </ul>
+      </details>
+    </footer>
+
+    <dialog id="help" aria-labelledby="help-h">
+      <h2 id="help-h">Keyboard and sound guide</h2>
+      <p>Focus the explorer first (Tab to it, or click it). Screen reader users: the explorer passes keys straight through. On a phone or tablet without a keyboard, use the move buttons under the explorer instead.</p>
+      <table>
+        <caption class="visually-hidden">Keys</caption>
+        <thead><tr><th scope="col">Key</th><th scope="col">What it does</th></tr></thead>
+        <tbody>
+          <tr><td><kbd>←</kbd> <kbd>→</kbd></td><td>Linked list: previous / next node. Tree: left / right child.</td></tr>
+          <tr><td><kbd>↑</kbd> <kbd>↓</kbd></td><td>Stack: towards the top / bottom. Tree: <kbd>↑</kbd> goes to the parent.</td></tr>
+          <tr><td><kbd>S</kbd></td><td>Tree: jump to the sibling.</td></tr>
+          <tr><td><kbd>Home</kbd> / <kbd>End</kbd></td><td>Head / tail, top / bottom, or the root.</td></tr>
+          <tr><td><kbd>Space</kbd> or <kbd>R</kbd></td><td>Repeat where you are, in full.</td></tr>
+          <tr><td><kbd>P</kbd></td><td>Path: how you got here from the start.</td></tr>
+          <tr><td><kbd>O</kbd></td><td>Overview of the whole structure.</td></tr>
+          <tr><td><kbd>T</kbd></td><td>Listen to the shape: play every node in order. Any key stops it.</td></tr>
+          <tr><td><kbd>Enter</kbd></td><td>Practice: answer with the current position.</td></tr>
+          <tr><td><kbd>H</kbd> / <kbd>N</kbd></td><td>Practice: hint / next question.</td></tr>
+          <tr><td><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd></td><td>Switch to linked list, stack or tree.</td></tr>
+          <tr><td><kbd>M</kbd></td><td>Switch between Explore and Practice.</td></tr>
+        </tbody>
+      </table>
+      <h3>What the sounds mean</h3>
+      <ul>
+        <li><strong>Pitch is position.</strong> Tree: the root is highest and each level down is lower. Stack: the top is highest. List: pitch rises from head to tail.</li>
+        <li><strong>Left and right ear.</strong> In a tree, nodes further left in sorted order sound further left.</li>
+        <li><strong>Ticks</strong> after a tree node: a tick in the left ear means it has a left child, a tick in the right ear means a right child. No ticks: a leaf. In a list, a right tick means there is a next node.</li>
+        <li><strong>Airy falling sound:</strong> an empty slot (practice insert questions only).</li>
+        <li><strong>Low thud:</strong> there is nothing in that direction.</li>
+        <li><strong>Rising two notes:</strong> correct. <strong>Falling two notes:</strong> try again.</li>
+      </ul>
+      <form method="dialog"><button class="primary">Close guide</button></form>
+    </dialog>
+
+    <div class="visually-hidden">
+      <div id="live-a" aria-live="assertive" aria-atomic="true"></div>
+      <div id="live-b" aria-live="assertive" aria-atomic="true"></div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
