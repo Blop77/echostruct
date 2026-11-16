@@ -46,11 +46,21 @@ Record what you hear and anything confusing. Put honest results in the Devpost "
 
 A short recording is the strongest proof that this works without sight.
 
-1. Turn on VoiceOver (Cmd+F5) and wear headphones.
-2. Start a screen recording that includes your microphone and system audio. In QuickTime Player: File → New Screen Recording, Options → microphone on. Or press Cmd+Shift+5.
-3. **Cover or dim the screen** (Ctrl+Option+Fn+Shift+_ toggles VoiceOver's Screen Curtain), so the recording shows you can't see it.
-4. Open https://blop77.github.io/echostruct/, Tab to the explorer, press M for Practice, and complete one **Insert** question by ear, using H for hints if you need them.
-5. Stop the recording. Keep it under 2 minutes and add captions or a transcript.
+macOS's built-in screen recorder (Cmd+Shift+5 or QuickTime) does **not** capture the computer's own sound. Either:
+
+- **Simple:** use speakers rather than headphones, and record with the microphone on, so it picks up VoiceOver and the tones. The left/right ear cues are lost, but everything else comes through.
+- **Clean audio:** record with OBS Studio (free). On macOS 13 or later, its "macOS Screen Capture" source records system audio directly.
+
+Steps:
+
+1. Open https://blop77.github.io/echostruct/ in Safari and press Cmd+Shift+R to load the latest version. Turn on Do Not Disturb.
+2. Turn on VoiceOver with Cmd+F5. If arrow keys move the VoiceOver cursor instead of the app, press Left+Right arrows together to turn Quick Nav off.
+3. Press Cmd+Shift+5, choose **Record Entire Screen**, set **Options → Microphone** to the built-in microphone, then click **Record**.
+4. Tab to the explorer, press M for Practice, and complete one **Insert** question using only what you hear (H for hints). Then press T to play the tree's shape.
+5. Stop the recording with Cmd+Ctrl+Esc. The video is saved to the Desktop.
+6. Upload it to YouTube (Unlisted works), check the auto-generated captions, and paste the link into Devpost's "Video demo link".
+
+Leave the screen visible in the recording so judges can follow along. To test truly without sight, do a separate run with VoiceOver's Screen Curtain on (Ctrl+Option+Fn+Shift+_ toggles it) and note the result in the table.
 
 Fill in the table below, even if something went wrong. Honest results score better than claims.
 
