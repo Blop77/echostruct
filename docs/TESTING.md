@@ -41,3 +41,21 @@ Use headphones.
 Record what you hear and anything confusing. Put honest results in the Devpost "challenges" or "what we learned" section.
 
 **iPhone + VoiceOver:** open the page, swipe to the move buttons (Parent, Left child…), double-tap to move, and confirm each announcement is spoken.
+
+## Recording the evidence (for judges)
+
+A short recording is the strongest proof that this works without sight.
+
+1. Turn on VoiceOver (Cmd+F5) and wear headphones.
+2. Start a screen recording that includes your microphone and system audio. In QuickTime Player: File → New Screen Recording, Options → microphone on. Or press Cmd+Shift+5.
+3. **Cover or dim the screen** (Ctrl+Option+Fn+Shift+_ toggles VoiceOver's Screen Curtain), so the recording shows you can't see it.
+4. Open https://blop77.github.io/echostruct/, Tab to the explorer, press M for Practice, and complete one **Insert** question by ear, using H for hints if you need them.
+5. Stop the recording. Keep it under 2 minutes and add captions or a transcript.
+
+Fill in the table below, even if something went wrong. Honest results score better than claims.
+
+| Date | Screen reader + browser | Task | Completed by ear? | What was confusing or broken |
+|---|---|---|---|---|
+| | VoiceOver + Safari | Insert a value (practice) | | |
+| | VoiceOver + Chrome | Explore tree, P, O, T | | |
+| | VoiceOver on iPhone | Move buttons on a list | | |

@@ -98,6 +98,9 @@ let wrongThisQuestion = 0;
 let lastType: string | undefined;
 const score = { answered: 0, firstTry: 0, hints: 0, number: 0 };
 let touring = false;
+/** Every pending audio timer, so switching tasks can silence everything at once. */
+let tourTimers: number[] = [];
+let soundCheckTimers: number[] = [];
 
 interface Settings {
   sound: boolean;
@@ -135,13 +138,26 @@ function announce(text: string, polite = false) {
     flip = !flip;
   }
   statusText.textContent = text;
-  if (settings.voice && "speechSynthesis" in window) {
+  const voice = settings.voice ? localVoice() : null;
+  if (voice) {
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
+    u.voice = voice;
+    u.lang = voice.lang;
     u.rate = settings.rate;
-    u.lang = "en";
     speechSynthesis.speak(u);
   }
+}
+
+/**
+ * An on-device voice, or null. Some browsers also offer cloud voices that send the text to a
+ * server; EchoStruct never uses those, so it stays private and works offline.
+ */
+function localVoice(): SpeechSynthesisVoice | null {
+  if (!("speechSynthesis" in window)) return null;
+  const local = speechSynthesis.getVoices().filter((v) => v.localService);
+  const en = local.filter((v) => v.lang.toLowerCase().startsWith("en"));
+  return en.find((v) => v.default) ?? en[0] ?? local.find((v) => v.default) ?? local[0] ?? null;
 }
 
 // ---------------------------------------------------------------- Rendering
@@ -297,6 +313,7 @@ function renderOps() {
 }
 
 function afterChange(msg: string) {
+  stopAudio();
   if (mode === "practice") {
     newQuestion(false);
     msg += ` The structure changed, so here is a new question. ${question?.prompt ?? ""}`;
@@ -372,7 +389,7 @@ function renderMoveButtons() {
 }
 
 function setKind(k: Kind, speak = true) {
-  stopTour();
+  stopAudio();
   kind = k;
   (document.querySelector(`input[name=kind][value=${k}]`) as HTMLInputElement).checked = true;
   lesson.innerHTML = LESSONS[k];
@@ -390,7 +407,7 @@ function setKind(k: Kind, speak = true) {
 }
 
 function setMode(m: "explore" | "practice", speak = true) {
-  stopTour();
+  stopAudio();
   mode = m;
   (document.querySelector(`input[name=mode][value=${m}]`) as HTMLInputElement).checked = true;
   practicePanel.hidden = m !== "practice";
@@ -406,6 +423,7 @@ function setMode(m: "explore" | "practice", speak = true) {
 // ---------------------------------------------------------------- Practice
 
 function newQuestion(speak = true) {
+  stopAudio();
   question = makeQuestion(current(), Math.random, lastType);
   answered = false;
   moves = 0;
@@ -471,13 +489,20 @@ function hint() {
 
 // ---------------------------------------------------------------- Tour
 
+/** Silences the shape tour and the sound check, including anything scheduled but not yet played. */
+function stopAudio(): boolean {
+  const wasTouring = touring;
+  stopTour();
+  for (const t of [...tourTimers, ...soundCheckTimers]) window.clearTimeout(t);
+  tourTimers = [];
+  soundCheckTimers = [];
+  touring = false;
+  if (wasTouring) render();
+  return wasTouring;
+}
+
 function tour() {
-  if (touring) {
-    stopTour();
-    touring = false;
-    render();
-    return announce("Stopped.");
-  }
+  if (stopAudio()) return announce("Stopped.");
   const s = current();
   const ids = s.tour();
   if (!ids.length) return announce("Nothing to play: the structure is empty.");
@@ -485,17 +510,21 @@ function tour() {
   announce(`Playing ${ids.length} nodes ${TOUR_ORDER[kind]}.`);
   const tones = ids.map((id) => s.tone(id));
   // Give the screen reader a moment to start speaking before the tones begin.
-  window.setTimeout(() => {
-    if (!touring) return;
-    playTour(tones, (i) => {
-      renderDiagram(diagram, s, ids[i], false);
-      if (i === ids.length - 1)
-        window.setTimeout(() => {
-          touring = false;
-          render();
-        }, 300);
-    });
-  }, 900);
+  tourTimers.push(
+    window.setTimeout(() => {
+      if (!touring) return;
+      playTour(tones, (i) => {
+        renderDiagram(diagram, s, ids[i], false);
+        if (i === ids.length - 1)
+          tourTimers.push(
+            window.setTimeout(() => {
+              touring = false;
+              render();
+            }, 300),
+          );
+      });
+    }, 900),
+  );
 }
 
 // ---------------------------------------------------------------- Keyboard
@@ -513,11 +542,7 @@ const KEY_DIRS: Record<string, Dir> = {
 
 explorer.addEventListener("keydown", (e) => {
   if (e.ctrlKey || e.metaKey || e.altKey) return;
-  if (touring && e.key !== "t" && e.key !== "T" && e.key !== "Tab") {
-    stopTour();
-    touring = false;
-    render();
-  }
+  if (e.key !== "t" && e.key !== "T" && e.key !== "Tab") stopAudio();
   const dir = KEY_DIRS[e.key];
   let handled = true;
   if (dir) move(dir);
@@ -612,6 +637,7 @@ $("help-btn").addEventListener("click", () => help.showModal());
 $("op-form").addEventListener("submit", (e) => e.preventDefault());
 
 function build(values: number[], label: string) {
+  stopAudio();
   structures[kind] = create(kind, values);
   cursor[kind] = structures[kind].startId();
   const s = current();
@@ -683,10 +709,25 @@ setText.value = settings.text;
 setTheme.value = settings.theme;
 setVolume.setAttribute("aria-valuetext", `${Math.round(settings.volume * 100)} percent`);
 setRate.setAttribute("aria-valuetext", `${settings.rate} times`);
-if (!("speechSynthesis" in window)) {
-  setVoice.disabled = true;
-  $("voice-help").textContent = "This browser has no built-in voice. Use your screen reader.";
+function updateVoiceAvailability() {
+  const help = $("voice-help");
+  if (!("speechSynthesis" in window)) {
+    setVoice.disabled = true;
+    help.textContent = "This browser has no built-in voice. Use your screen reader.";
+    return;
+  }
+  // The voice list loads asynchronously; only decide once it has arrived.
+  if (!speechSynthesis.getVoices().length) return;
+  if (!localVoice()) {
+    setVoice.checked = false;
+    setVoice.disabled = true;
+    settings.voice = false;
+    help.textContent =
+      "This browser only offers online voices, which would send what you hear to a server, so the built-in voice is turned off. Use your screen reader.";
+  }
 }
+updateVoiceAvailability();
+if ("speechSynthesis" in window) speechSynthesis.addEventListener("voiceschanged", updateVoiceAvailability);
 
 $("settings").addEventListener("input", () => {
   settings = {
@@ -703,11 +744,9 @@ $("settings").addEventListener("input", () => {
   applySettings();
 });
 
-let soundCheckTimers: number[] = [];
 $("sound-check").addEventListener("click", () => {
-  // Restart instead of overlapping if pressed again.
-  soundCheckTimers.forEach((t) => window.clearTimeout(t));
-  soundCheckTimers = [];
+  // Restart instead of overlapping if pressed again; also stops a running tour.
+  stopAudio();
   const t = new BST([8, 3, 10, 1, 6, 14, 4, 7, 13]);
   const steps: [string, () => void][] = [
     ["Root, depth 0: the highest pitch. Ticks in both ears: it has two children.", () => playTone(t.tone("n:8"))],
