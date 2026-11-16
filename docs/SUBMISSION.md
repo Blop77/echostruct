@@ -101,6 +101,6 @@ typescript, vite, web-audio-api, web-speech-api, aria, html, css
 - [ ] Add the demo link: https://blop77.github.io/echostruct/
 - [ ] Add the source link: https://github.com/Blop77/echostruct
 - [x] Screenshots: thumbnail and 7 gallery images (docs/media).
-- [ ] Upload the demo video (YouTube, with corrected captions) and paste the link into "Video demo link".
+- [x] Demo video uploaded: https://youtu.be/XsFOKecf-OM (check the captions are corrected)
 - [ ] Add every team member.
 - [ ] Submit before **Nov 20, 5:00 PM ET**.

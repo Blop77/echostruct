@@ -12,7 +12,7 @@ This page separates what has been checked from what still needs a person to chec
 | Keyboard-only flow | Explore with arrows/Home/S/P/O, switch with 1/2/3 and M, and answer practice questions by following only the spoken hints | Works for all three structures; insert questions update the tree |
 | Phone width (375 px) | Browser emulation, dark mode | No horizontal page scroll; wide trees scroll inside the explorer and the current node scrolls into view; move buttons work |
 | Offline build | `npm run build`, then served `dist/index.html` and listed network requests | One ~62 KB file; zero extra network requests |
-| VoiceOver on macOS | Recorded end-to-end run on the live site (2 min demo video), using only keyboard and VoiceOver output | Explore, path (P), overview (O), a practice **Insert 5** question answered by following hints, and the sorted-input shape tour (T) all worked. Every announcement in VoiceOver's caption panel matched the expected text. See the results table below |
+| VoiceOver on macOS | Recorded end-to-end run on the live site ([2 min demo video](https://youtu.be/XsFOKecf-OM)), using only keyboard and VoiceOver output | Explore, path (P), overview (O), a practice **Insert 5** question answered by following hints, and the sorted-input shape tour (T) all worked. Every announcement in VoiceOver's caption panel matched the expected text. See the results table below |
 
 ## Not yet done (needs a person)
 
