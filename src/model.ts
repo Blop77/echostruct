@@ -515,8 +515,10 @@ export class BST implements Structure {
     const order = this.inorder();
     const n = order.length;
     const panOf = (t: TNode) => (n > 1 ? (order.indexOf(t) / (n - 1)) * 2 - 1 : 0);
-    // Root is highest; each level down drops a perfect fourth (5 semitones).
-    const pitch = (depth: number) => clamp(7 - depth * 5, -29, 7);
+    // Root is highest; each level down drops a perfect fourth (5 semitones). Very tall trees use
+    // a smaller step so every level stays distinct within a comfortable 3-octave range.
+    const step = Math.min(5, 36 / Math.max(1, this.height() + 1)); // +1 leaves room for empty slots
+    const pitch = (depth: number) => 7 - depth * step;
     if (slot) {
       if (!slot.parent) return { semitone: pitch(0), pan: 0, cueLeft: false, cueRight: false, variant: "empty" };
       const shift = slot.side === "left" ? -0.25 : 0.25;

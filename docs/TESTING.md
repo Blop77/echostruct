@@ -6,7 +6,7 @@ This page separates what has been checked from what still needs a person to chec
 
 | Check | How | Result |
 |---|---|---|
-| Unit tests | `npm test` (Vitest): 22 tests covering navigation, spoken descriptions, paths, overviews, sound mapping, input parsing, and practice answers and hints | All pass |
+| Unit tests | `npm test` (Vitest): 27 tests covering navigation, spoken descriptions, paths, overviews, sound mapping, input parsing, and practice answers and hints | All pass |
 | Type check | `tsc --noEmit` | No errors |
 | Automated accessibility | axe-core 4.x, WCAG 2.0/2.1/2.2 A and AA plus best-practice rules, run in light, dark, high-contrast and system themes with Practice mode open | 0 violations. "Needs review": colour contrast of the numbers inside SVG nodes (dark text on white or yellow), checked by hand and passing |
 | Keyboard-only flow | Explore with arrows/Home/S/P/O, switch with 1/2/3 and M, and answer practice questions by following only the spoken hints | Works for all three structures; insert questions update the tree |

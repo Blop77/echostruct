@@ -165,7 +165,6 @@ function stackQuestion(s: Stack, rand: Rand, avoid?: string): Question | null {
   const types = n >= 3 ? ["peek", "pop", "pushpop"] : ["peek"];
   const options = types.filter((ty) => ty !== avoid);
   const type = pick(options.length ? options : types, rand);
-  const topHint = "The top is the value pushed most recently. Press Home to jump to the top.";
 
   let prompt: string;
   let answerIndex: number;
@@ -191,6 +190,9 @@ function stackQuestion(s: Stack, rand: Rand, avoid?: string): Question | null {
       .reverse()
       .join(", ")}, leaving ${s.items[answerIndex]} on top.`;
   }
+  const target = s.items[answerIndex];
+  const removed = n - 1 - answerIndex;
+  let hints = 0;
 
   return {
     type,
@@ -201,49 +203,68 @@ function stackQuestion(s: Stack, rand: Rand, avoid?: string): Question | null {
     bestMoves: answerIndex,
     check(id) {
       const i = LinkedList.index(id);
-      if (i === answerIndex) return { correct: true, feedback: `Correct, ${s.items[i]}. ${explain}` };
+      // The question asks for a value, so any copy of the right value counts.
+      if (i >= 0 && s.items[i] === target) return { correct: true, feedback: `Correct, ${target}. ${explain}` };
       return { correct: false, feedback: `Not ${i >= 0 ? s.items[i] : "that"}. Last in, first out: work down from the top. Press H for a hint.` };
     },
     hint(cur) {
       const i = LinkedList.index(cur);
-      if (type === "peek") return i === n - 1 ? "You are on the top. Press Enter." : topHint;
-      const steps = n - 1 - answerIndex;
+      if (i >= 0 && s.items[i] === target) return "You are on it. Press Enter.";
+      hints++;
+      if (type === "peek")
+        return hints === 1
+          ? "pop() removes the value that was pushed most recently. Where in the stack is that?"
+          : "The most recent value is on the top. Press Home to jump to the top.";
+      if (hints === 1)
+        return "Every pop removes whatever is on the top at that moment. Start at the top with Home, then step down once for each value that gets removed.";
       const fromTop = n - 1 - i;
-      if (i === answerIndex) return "You are there. Press Enter.";
-      return `Start at the top and count down one value for each value that gets removed. The answer is ${steps === 1 ? "1 step" : `${steps} steps`} below the top; you are ${fromTop === 0 ? "on the top" : `${fromTop} below the top`}.`;
+      return `${removed === 1 ? "1 value gets" : `${removed} values get`} removed from the original stack, so the answer is ${removed} below the top. You are ${fromTop === 0 ? "on the top" : `${fromTop} below the top`}.`;
     },
   };
 }
 
 // ---------------------------------------------------------------- Linked list
 
+/** Indices whose value appears only once, so a question about "the node holding v" is unambiguous. */
+function uniqueIndices(items: number[]): number[] {
+  const count = new Map<number, number>();
+  for (const v of items) count.set(v, (count.get(v) ?? 0) + 1);
+  return items.flatMap((v, i) => (count.get(v) === 1 ? [i] : []));
+}
+
 function listQuestion(l: LinkedList, rand: Rand, avoid?: string): Question | null {
   const n = l.size();
   if (!n) return null;
-  const types = n >= 3 ? ["nth", "before", "delete"] : n >= 2 ? ["nth", "before"] : ["nth"];
+  const unique = new Set(uniqueIndices(l.items));
+  // "before": answer index a in 1..n-2 whose successor's value is unique. "delete": deleted index d in 2..n-1 with a unique value.
+  const beforeChoices = Array.from({ length: Math.max(0, n - 2) }, (_, j) => j + 1).filter((a) => unique.has(a + 1));
+  const deleteChoices = Array.from({ length: Math.max(0, n - 2) }, (_, j) => j + 2).filter((d) => unique.has(d));
+  const types = ["nth", ...(beforeChoices.length ? ["before"] : []), ...(deleteChoices.length ? ["delete"] : [])];
   const options = types.filter((ty) => ty !== avoid);
   const type = pick(options.length ? options : types, rand);
 
   let prompt: string;
   let answer: number;
   let explain: string;
+  let k = 1;
   if (type === "nth") {
-    const k = n > 1 ? 2 + Math.floor(rand() * (n - 1)) : 1;
+    k = n > 1 ? 2 + Math.floor(rand() * (n - 1)) : 1;
     answer = k - 1;
     prompt = `Go to the ${ordinal(k)} node, counting the head as the first. Answer when you are on it.`;
     explain = `A linked list has no index lookup, so reaching the ${ordinal(k)} node means following ${k - 1} next pointer${k - 1 === 1 ? "" : "s"} from the head.`;
   } else if (type === "before") {
-    // Avoid the head (where the learner starts) when the list is long enough.
-    answer = n >= 3 ? 1 + Math.floor(rand() * (n - 2)) : 0;
+    answer = pick(beforeChoices, rand);
     prompt = `Which node's next pointer points to ${l.items[answer + 1]}? Move to it and answer.`;
     explain = `${l.items[answer]} comes right before ${l.items[answer + 1]}, so its next pointer leads there.`;
   } else {
-    const del = 2 + Math.floor(rand() * (n - 2));
+    const del = pick(deleteChoices, rand);
     answer = del - 1;
     const after = del + 1 < n ? String(l.items[del + 1]) : "null";
     prompt = `If you delete ${l.items[del]}, which node's next pointer has to change? Move to it and answer.`;
     explain = `${l.items[answer]} currently points to ${l.items[del]}. After the delete it must skip over it and point to ${after}.`;
   }
+  const targetNext = l.items[answer + 1];
+  let hints = 0;
 
   return {
     type,
@@ -253,16 +274,28 @@ function listQuestion(l: LinkedList, rand: Rand, avoid?: string): Question | nul
     check(id) {
       const i = LinkedList.index(id);
       if (i === answer) return { correct: true, feedback: `Correct, ${l.items[i]}. ${explain}` };
-      return { correct: false, feedback: `Not ${i >= 0 ? l.items[i] : "that"}. Press H for a hint.` };
+      if (i < 0) return { correct: false, feedback: "That is not a node. Press H for a hint." };
+      const v = l.items[i];
+      const next = i + 1 < n ? String(l.items[i + 1]) : "null";
+      const why =
+        type === "nth"
+          ? `That is node ${i + 1}, holding ${v}. You need node ${k}.`
+          : `This ${v} is node ${i + 1}, and its next pointer leads to ${next}, not ${targetNext}.`;
+      return { correct: false, feedback: `${why} Press H for a hint.` };
     },
     hint(cur) {
       const i = LinkedList.index(cur);
-      if (i === answer) return "You are there. Press Enter.";
+      if (i === answer) return "You are on it. Press Enter.";
+      hints++;
       const dist = answer - i;
       const where = `Move ${dist > 0 ? "right" : "left"} ${Math.abs(dist)} ${Math.abs(dist) === 1 ? "node" : "nodes"}.`;
-      if (type === "nth") return `You are on node ${i + 1}. ${where}`;
-      if (type === "before") return `Find ${l.items[answer + 1]} first, then step back one node to the left. ${where}`;
-      return `The node to change is the one just before the deleted node, because its next pointer leads to it. ${where}`;
+      if (type === "nth")
+        return hints === 1 ? "Start at the head with Home. The head is node 1. Press Right arrow and count each node you reach." : `You are on node ${i + 1}. ${where}`;
+      if (type === "before")
+        return hints === 1 ? `Find ${targetNext} first. The node you want is the one just before it.` : `${where}`;
+      return hints === 1
+        ? "Deleting a node means the node before it has to skip over it. Which node comes just before the one being deleted?"
+        : `The node to change is just before the deleted one. ${where}`;
     },
   };
 }

@@ -165,3 +165,46 @@ describe("practice", () => {
     expect(makeQuestion(new LinkedList([]))).toBeNull();
   });
 });
+
+describe("fixes from review", () => {
+  it("stack: any copy of the right value counts as correct", () => {
+    const s = new Stack([4, 4, 9]);
+    const q = makeQuestion(s, seq(0.4, 0))!; // "pop" once -> 4 on top
+    expect(q.type).toBe("pop");
+    expect(q.check("i:1").correct).toBe(true);
+    expect(q.check("i:0").correct).toBe(true); // the other 4
+    expect(q.check("i:2").correct).toBe(false);
+  });
+
+  it("list: never asks about a value that appears twice", () => {
+    const l = new LinkedList([3, 5, 3, 5, 8]);
+    for (let i = 0; i < 40; i++) {
+      const q = makeQuestion(l, Math.random)!;
+      if (q.type === "before") expect(q.prompt).toContain("points to 8");
+      expect(q.type === "delete" && /delete (3|5)/.test(q.prompt)).toBe(false);
+    }
+  });
+
+  it("list: wrong answers say what that node points to", () => {
+    const l = new LinkedList([3, 12, 7, 9, 1]);
+    const q = makeQuestion(l, seq(0.5, 0))!; // "before", answer index 1 (12 -> 7)
+    expect(q.type).toBe("before");
+    expect(q.check("i:2").feedback).toContain("its next pointer leads to 9, not 7");
+  });
+
+  it("hints start conceptual and get specific", () => {
+    const s = new Stack([2, 5, 4, 9]);
+    const q = makeQuestion(s, seq(0.4, 0))!;
+    const first = q.hint("i:0");
+    const second = q.hint("i:0");
+    expect(first).not.toMatch(/\d below the top/);
+    expect(second).toMatch(/1 below the top/);
+  });
+
+  it("tall trees keep every level at a distinct pitch", () => {
+    const chain = new BST(Array.from({ length: 31 }, (_, i) => i));
+    const pitches = chain.inorder().map((n) => chain.tone(`n:${n.value}`).semitone);
+    expect(new Set(pitches).size).toBe(31);
+    expect(Math.min(...pitches)).toBeGreaterThanOrEqual(-29);
+  });
+});

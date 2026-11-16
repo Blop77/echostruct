@@ -12,6 +12,7 @@ const instructions = $("explorer-instructions");
 const statusText = $("status-text");
 const liveA = $("live-a");
 const liveB = $("live-b");
+const livePolite = $("live-polite");
 const practicePanel = $("practice-panel");
 const questionEl = $("question");
 const feedbackEl = $("feedback");
@@ -121,11 +122,18 @@ const slotsOn = () => mode === "practice" && !!question?.slots && !answered;
 // ---------------------------------------------------------------- Speech
 
 let flip = false;
-function announce(text: string) {
-  const [on, off] = flip ? [liveA, liveB] : [liveB, liveA];
-  off.textContent = "";
-  on.textContent = text;
-  flip = !flip;
+/** polite: wait for the screen reader to finish what it is saying (used on focus). */
+function announce(text: string, polite = false) {
+  if (polite) {
+    livePolite.textContent = "";
+    window.setTimeout(() => (livePolite.textContent = text), 50);
+  } else {
+    livePolite.textContent = "";
+    const [on, off] = flip ? [liveA, liveB] : [liveB, liveA];
+    off.textContent = "";
+    on.textContent = text;
+    flip = !flip;
+  }
   statusText.textContent = text;
   if (settings.voice && "speechSynthesis" in window) {
     speechSynthesis.cancel();
@@ -410,7 +418,8 @@ function newQuestion(speak = true) {
     return;
   }
   lastType = question.type;
-  score.number++;
+  // Skipped questions don't count, so the number tracks real progress.
+  score.number = score.answered + 1;
   questionEl.textContent = `Question ${score.number}: ${question.prompt}`;
   cursor[kind] = question.start ?? current().startId();
   render();
@@ -574,8 +583,8 @@ explorer.addEventListener("focus", () => {
   focusTimer = window.setTimeout(() => {
     if (document.activeElement !== explorer) return;
     const where = `You are at ${current().describe(cursor[kind], settings.brief)}`;
-    announce(mode === "practice" && question && !answered ? `${questionEl.textContent} ${where}` : where);
-  }, 900);
+    announce(mode === "practice" && question && !answered ? `${questionEl.textContent} ${where}` : where, true);
+  }, 300);
 });
 explorer.addEventListener("keydown", () => window.clearTimeout(focusTimer), { capture: true });
 
@@ -694,7 +703,11 @@ $("settings").addEventListener("input", () => {
   applySettings();
 });
 
+let soundCheckTimers: number[] = [];
 $("sound-check").addEventListener("click", () => {
+  // Restart instead of overlapping if pressed again.
+  soundCheckTimers.forEach((t) => window.clearTimeout(t));
+  soundCheckTimers = [];
   const t = new BST([8, 3, 10, 1, 6, 14, 4, 7, 13]);
   const steps: [string, () => void][] = [
     ["Root, depth 0: the highest pitch. Ticks in both ears: it has two children.", () => playTone(t.tone("n:8"))],
@@ -709,10 +722,12 @@ $("sound-check").addEventListener("click", () => {
   ];
   if (!settings.sound) return announce("Sound mapping is off. Turn it on to hear the sound check.");
   steps.forEach(([text, play], i) =>
-    window.setTimeout(() => {
-      announce(text);
-      window.setTimeout(play, 500);
-    }, i * 3200),
+    soundCheckTimers.push(
+      window.setTimeout(() => {
+        announce(text);
+        soundCheckTimers.push(window.setTimeout(play, 500));
+      }, i * 3200),
+    ),
   );
 });
 

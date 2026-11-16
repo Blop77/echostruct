@@ -27,9 +27,9 @@
         <h2 id="why-h">Why this exists</h2>
         <div class="before-after">
           <figure class="before">
-            <img id="before-img" alt="graphic" width="240" height="150" />
+            <img id="before-img" alt="Example of an inaccessible course diagram: a binary search tree drawn as a picture. Course materials often give images like this the alt text &quot;graphic&quot;." width="240" height="150" />
             <figcaption>
-              <strong>Before:</strong> a typical course diagram. Its alt text is just <q>graphic</q>, so that is all a
+              <strong>Before:</strong> a typical course diagram. When its alt text is just <q>graphic</q>, that is all a
               screen reader says. The structure, which is the point of the lesson, is missing.
             </figcaption>
           </figure>
@@ -50,9 +50,9 @@
         <div class="controls">
           <fieldset>
             <legend>Structure</legend>
-            <label><input type="radio" name="kind" value="list" /> Linked list <kbd>1</kbd></label>
-            <label><input type="radio" name="kind" value="stack" /> Stack <kbd>2</kbd></label>
-            <label><input type="radio" name="kind" value="tree" checked /> Binary search tree <kbd>3</kbd></label>
+            <label><input type="radio" name="kind" value="list" aria-keyshortcuts="1" /> Linked list <kbd aria-hidden="true">1</kbd></label>
+            <label><input type="radio" name="kind" value="stack" aria-keyshortcuts="2" /> Stack <kbd aria-hidden="true">2</kbd></label>
+            <label><input type="radio" name="kind" value="tree" checked aria-keyshortcuts="3" /> Binary search tree <kbd aria-hidden="true">3</kbd></label>
           </fieldset>
           <fieldset>
             <legend>Mode</legend>
@@ -88,16 +88,16 @@
           <p id="question" class="question"></p>
           <p id="feedback" class="feedback"></p>
           <div class="row">
-            <button type="button" id="hint-btn">Hint <kbd>H</kbd></button>
-            <button type="button" id="next-btn">Next question <kbd>N</kbd></button>
+            <button type="button" id="hint-btn" aria-keyshortcuts="H">Hint <kbd aria-hidden="true">H</kbd></button>
+            <button type="button" id="next-btn" aria-keyshortcuts="N">Next question <kbd aria-hidden="true">N</kbd></button>
             <p id="score" class="score"></p>
           </div>
         </section>
 
         <div class="row keys-row">
-          <button type="button" id="help-btn">Keyboard and sound guide <kbd>?</kbd></button>
-          <button type="button" id="tour-btn">Listen to the shape <kbd>T</kbd></button>
-          <button type="button" id="overview-btn">Describe it all <kbd>O</kbd></button>
+          <button type="button" id="help-btn" aria-keyshortcuts="?">Keyboard and sound guide <kbd aria-hidden="true">?</kbd></button>
+          <button type="button" id="tour-btn" aria-keyshortcuts="T">Listen to the shape <kbd aria-hidden="true">T</kbd></button>
+          <button type="button" id="overview-btn" aria-keyshortcuts="O">Describe it all <kbd aria-hidden="true">O</kbd></button>
         </div>
       </section>
 
@@ -230,6 +230,7 @@
     <div class="visually-hidden">
       <div id="live-a" aria-live="assertive" aria-atomic="true"></div>
       <div id="live-b" aria-live="assertive" aria-atomic="true"></div>
+      <div id="live-polite" aria-live="polite" aria-atomic="true"></div>
     </div>
 
     <script type="module" src="/src/main.ts"></script>

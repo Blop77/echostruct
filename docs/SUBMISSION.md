@@ -64,7 +64,7 @@ TypeScript and Vite, with no runtime libraries.
 ## Accomplishments
 
 - Zero violations in an automated WCAG 2.2 AA check (axe-core) across all four colour themes.
-- 22 unit tests covering the structures, descriptions and practice logic.
+- 27 unit tests covering the structures, descriptions and practice logic.
 - [Add real testing results, e.g. "Tested end to end with VoiceOver on macOS."]
 
 ## What we learned
