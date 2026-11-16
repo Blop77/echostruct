@@ -11,11 +11,12 @@ This page separates what has been checked from what still needs a person to chec
 | Automated accessibility | axe-core 4.x, WCAG 2.0/2.1/2.2 A and AA plus best-practice rules, run in light, dark, high-contrast and system themes with Practice mode open | 0 violations. "Needs review": colour contrast of the numbers inside SVG nodes (dark text on white or yellow), checked by hand and passing |
 | Keyboard-only flow | Explore with arrows/Home/S/P/O, switch with 1/2/3 and M, and answer practice questions by following only the spoken hints | Works for all three structures; insert questions update the tree |
 | Phone width (375 px) | Browser emulation, dark mode | No horizontal page scroll; wide trees scroll inside the explorer and the current node scrolls into view; move buttons work |
-| Offline build | `npm run build`, then served `dist/index.html` and listed network requests | One 59 KB file; zero extra network requests |
+| Offline build | `npm run build`, then served `dist/index.html` and listed network requests | One ~62 KB file; zero extra network requests |
+| VoiceOver on macOS | Recorded end-to-end run on the live site (2 min demo video), using only keyboard and VoiceOver output | Explore, path (P), overview (O), a practice **Insert 5** question answered by following hints, and the sorted-input shape tour (T) all worked. Every announcement in VoiceOver's caption panel matched the expected text. See the results table below |
 
 ## Not yet done (needs a person)
 
-- **Real screen readers.** The live-region and `role="application"` approach is a standard pattern, but it has not been checked by ear with VoiceOver, NVDA or JAWS. Use the script below.
+- **Other screen readers.** VoiceOver on macOS has been tested (see below). NVDA, JAWS, VoiceOver on iPhone and TalkBack have not.
 - **Blind or low-vision learners.** No user testing yet. Don't claim learning gains.
 - **The sounds by ear.** The audio code runs without errors, but whether the pitch and stereo mapping is easy to learn is untested.
 
@@ -66,6 +67,6 @@ Fill in the table below, even if something went wrong. Honest results score bett
 
 | Date | Screen reader + browser | Task | Completed by ear? | What was confusing or broken |
 |---|---|---|---|---|
-| | VoiceOver + Safari | Insert a value (practice) | | |
-| | VoiceOver + Chrome | Explore tree, P, O, T | | |
+| Nov 16, 2026 | VoiceOver on macOS (browser: _fill in_) | Explore tree (arrows, P, O), practice "Insert 5", load "Sorted input" and play T | Yes, with VoiceOver; screen visible in the recording | VoiceOver's own built-in hint ("Press Control-Option-Command-Slash… To interact with items in this group…") played after entering the explorer and added several seconds of speech. It comes from VoiceOver, not the app, and can be turned off in VoiceOver Utility → Verbosity → Hints. No app announcements were missing or read twice. |
+| | VoiceOver + Screen Curtain (no sight) | Insert a value (practice) | | |
 | | VoiceOver on iPhone | Move buttons on a list | | |

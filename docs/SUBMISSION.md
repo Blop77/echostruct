@@ -59,17 +59,17 @@ TypeScript and Vite, with no runtime libraries.
 - **Keys vs. screen readers:** screen readers use the arrow keys themselves. We used the application-region pattern and added on-screen buttons for touch screen readers that can't send arrow keys.
 - **Sound that carries meaning:** we limited it to three ideas the learner can hold in their head (pitch = depth, ear = side, ticks = children) and wrote a sound guide and sound check.
 - **Practice that teaches:** practice questions are answered by moving, not by multiple choice, so practice builds the same skill as exploring.
-- [Add anything from your own screen-reader testing here.]
+- **Testing with a real screen reader:** we recorded a full run with VoiceOver on macOS. Every announcement matched what we designed. VoiceOver also reads its own long built-in hint when you enter the explorer ("To interact with items in this group…"), which adds several seconds of speech. A web page can't switch that hint off, but users can turn hints off in VoiceOver Utility, and our testing notes now say so.
 
 ## Accomplishments
 
 - Zero violations in an automated WCAG 2.2 AA check (axe-core) across all four colour themes.
 - 27 unit tests covering the structures, descriptions and practice logic.
-- [Add real testing results, e.g. "Tested end to end with VoiceOver on macOS."]
+- Completed a full task with VoiceOver on macOS, recorded in the demo video: exploring the tree, hearing the path and overview, answering "Insert 5" by following the hints, and hearing a sorted-input tree as a chain of falling tones.
 
 ## What we learned
 
-[Write this yourself; judges value the honest version. For example: what surprised you when you tried it with a screen reader.]
+_Draft: rewrite in your own words before pasting._ Designing for a screen reader is mostly about order and brevity. Every announcement starts with the value, because that's what you need on every move, and the rest stays short. Testing with VoiceOver showed that the screen reader adds its own speech too, so the app's messages have to leave room for it. Sound only helped once each cue had one clear meaning: pitch for depth, ears for side, ticks for children.
 
 ## What's next
 
@@ -80,7 +80,7 @@ TypeScript and Vite, with no runtime libraries.
 
 ## Limitations (be upfront)
 
-- Not yet tested with blind students. [Update after testing.]
+- Tested by us with VoiceOver on macOS only. Not yet tested with blind students, NVDA, JAWS or phone screen readers.
 - Linked lists, stacks and binary search trees only. No BST deletion.
 - Stereo cues need headphones or stereo speakers.
 - Practice progress isn't saved between visits.
@@ -90,7 +90,7 @@ TypeScript and Vite, with no runtime libraries.
 - Built during AccessED Hacks, Nov 2026. No pre-existing code.
 - Dev tools: TypeScript, Vite, vite-plugin-singlefile, Vitest, axe-core. No third-party code runs in the page.
 - All example data is synthetic.
-- AI assistance: Claude (Anthropic) helped write the code and documentation. [Describe your own role: idea, design decisions, testing, and so on.]
+- AI assistance: Claude (Anthropic) helped write the code and documentation. **My role:** _fill in, keeping only what is true_: the idea and choice of learner and barrier; design decisions (for example which structures, practice by navigating, the sound mapping); directing and reviewing the build; testing with VoiceOver and recording the demo.
 
 ## Built with
 
@@ -100,7 +100,7 @@ typescript, vite, web-audio-api, web-speech-api, aria, html, css
 
 - [ ] Add the demo link: https://blop77.github.io/echostruct/
 - [ ] Add the source link: https://github.com/Blop77/echostruct
-- [ ] Screenshots: explorer on the tree, a practice question with feedback, high-contrast theme, phone width.
-- [ ] Optional 2–3 minute demo video with captions. Show the screen reader speaking.
+- [x] Screenshots: thumbnail and 7 gallery images (docs/media).
+- [ ] Upload the demo video (YouTube, with corrected captions) and paste the link into "Video demo link".
 - [ ] Add every team member.
 - [ ] Submit before **Nov 20, 5:00 PM ET**.
