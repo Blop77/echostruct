@@ -4,7 +4,7 @@
 
 Blind and low-vision computer science students are often handed data-structure diagrams that a screen reader announces as just "graphic". EchoStruct turns linked lists, stacks and binary search trees into structures you can explore with the keyboard, hear as sound, and practise on.
 
-**[▶ Try EchoStruct](https://blop77.github.io/echostruct/)** · **[🎬 2-minute VoiceOver demo](https://youtu.be/XsFOKecf-OM)** · works in any modern browser, and offline from a single downloaded file.
+**[▶ Try EchoStruct](https://blop77.github.io/echostruct/)** · **[🎬 VoiceOver demo video](https://youtu.be/WgD1Ki2rn9k)** · works in any modern browser, and offline from a single downloaded file.
 
 Built for [AccessED Hacks 2026](https://accessed-hacks.devpost.com/) (door: **Interact**, with **Connect** for offline use).
 
